@@ -18,6 +18,14 @@ GPIO.setup(PUMP_PIN,GPIO.OUT)
 appid = "MoodyPlant"
 gearkey = "4vAN246i0mJ6Del"
 gearsecret =  "x2zcDw1cctrJKvZFm86tUsAI3"
+microgear.setalias("Pi")
+microgear.on_connect = connection
+microgear.on_message = subscription
+microgear.on_disconnect = disconnect                                                                                                                                                                                                                                                                                                                                                                                               
+microgear.subscribe("/ldr")
+microgear.connect(False)
+sensor = ""
+status = "OFF"#status_pump
 
 spi = spidev.SpiDev()
 spi.open(0, 0)
@@ -52,6 +60,17 @@ def ReadInput(Sensor):
     data = ((adc[1]&3) << 8) + adc[2]
     return data
 
+
+#mood plant
+def getmood(num):
+    if (num==0):
+        return "HAPPY"
+    elif(num==1):
+        return "WATERING"
+    elif(num==2):
+        return "I'M HUNGRY"
+
+
 microgear.create(gearkey,gearsecret,appid,{'debugmode': True})
 
 def connection():
@@ -73,28 +92,67 @@ def subscription(topic,message):
 def disconnect():
     logging.debug("disconnect is work")
 
-microgear.setalias("Pi")
-microgear.on_connect = connection
-microgear.on_message = subscription
-microgear.on_disconnect = disconnect                                                                                                                                                                                                                                                                                                                                                                                               
-microgear.subscribe("/ldr")
-microgear.connect(False)
+try:
+    while True:
+        humidity, temperature = Adafruit_DHT.read_retry(11, 7)
+        if temperature is not None and humidity is not None:
+            print 'Temp={0:0.1f}*C  Humidity={1:0.1f}%'.format(temperature, humidity)
+        sensor = str(humidity)+','+str(temperature)
+        soil = ReadInput(0)
+        waterlevel = ReadInput(1)
+        print 'soil ='+str(soil)
+        print 'waterlevel ='+str(waterlevel)
+        mood = ""
+        water = ""
+        if(info[3]<=200):
+            #warning
+            water = 0
+            print('no water')
+            GPIO.output(33,1)
+            GPIO.output(29,0)
+            GPIO.output(31,0)
 
-sensor = ""
-status = "OFF"#status_pump
-while True:
-    humidity, temperature = Adafruit_DHT.read_retry(11, 7)
-    if temperature is not None and humidity is not None:
-        print 'Temp={0:0.1f}*C  Humidity={1:0.1f}%'.format(temperature, humidity)
-    sensor = str(humidity)+','+str(temperature)
-    soil = ReadInput(0)
-    waterlevel = ReadInput(1)
-    print 'soil ='+str(soil)
-    print 'waterlevel ='+str(waterlevel)
-    sensor = str(humidity)+','+str(temperature)+','+str((soil-200)*0.222)+','+str(waterlevel*0.285)+','+status
-    time.sleep(0.3)
-    if(microgear.connected):
-        print sensor
-        microgear.chat("/ldr",sensor)
-        
-    time.sleep(0.3)
+        if (temperature >= 25 and temperature <= 35 and humidity >= 50 and soil<500 and soil>300):
+            #default level
+            mood = getmood(0)
+            GPIO.output(33,0)
+            GPIO.output(29,1)
+            GPIO.output(31,0)
+        elif soil<=300 :
+            #good 
+            mood = getmood(1)
+            #print('watering')
+            GPIO.output(33,0)
+            GPIO.output(29,1)
+            GPIO.output(31,1)
+        else:
+            #not good
+            #water pump active
+            mood = getmood(2)
+            #print('hungry')
+            GPIO.output(33,1)
+            GPIO.output(29,0)
+            GPIO.output(31,1)
+            GPIO.output(PUMP_PIN,GPIO.HIGH)
+            status = 1
+            #print('pump active')
+            print('watering')
+            microgear.chat("/ldr",sensor)
+            time.sleep(5)
+            GPIO.output(33,0)
+            GPIO.output(29,1)
+            time.sleep(1)
+            GPIO.output(PUMP_PIN,GPIO.LOW)
+            status = 0
+
+        sensor = str(humidity)+','+str(temperature)+','+str((soil-200)*0.222)+','+str(waterlevel*0.285)+','+status+','+mood+','+water
+        #time.sleep(0.3)
+        if(microgear.connected):
+            print sensor
+            microgear.chat("/ldr",sensor)
+            
+        time.sleep(0.3)
+finally:                # run on exit
+    spi.close()         # clean up
+    GPIO.cleanup()
+    print "\n All cleaned up."
