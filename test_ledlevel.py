@@ -53,7 +53,7 @@ try:
         #channel = 0
         info[0],info[1]  = Adafruit_DHT.read_retry(11, 7)
         if info[0] is not None and info[1] is not None:
-            print 'Temp={0:0.1f}*C  Humidity={1:0.1f}%'.format(info[1], info[0])
+            print '\nTemp={0:0.1f}*C  Humidity={1:0.1f}%'.format(info[1], info[0])
         else:
             print('no value')
         for i in range(0,2):
@@ -90,7 +90,7 @@ try:
             time.sleep(5)
             GPIO.output(33,0)
             GPIO.output(29,1)
-            time.sleep(2)
+            time.sleep(1)
             GPIO.output(PUMP_PIN,GPIO.LOW)
 
         if(info[3]<=200):
