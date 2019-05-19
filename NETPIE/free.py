@@ -104,7 +104,7 @@ try:
         print 'waterlevel ='+str(waterlevel)
         mood = ""
         water = ""
-        if(info[3]<=200):
+        if(waterlevel<=200):
             #warning
             water = 0
             print('no water')
@@ -145,7 +145,7 @@ try:
             GPIO.output(PUMP_PIN,GPIO.LOW)
             status = 0
 
-        sensor = str(humidity)+','+str(temperature)+','+str((soil-200)*0.222)+','+str(waterlevel*0.285)+','+status+','+mood+','+str(water)
+        sensor = str(humidity)+','+str(temperature)+','+str((soil-200)*0.222)+','+str(waterlevel*0.285)+','+status+','+mood
         #time.sleep(0.3)
         if(microgear.connected):
             print sensor
