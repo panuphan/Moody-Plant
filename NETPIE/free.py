@@ -18,14 +18,6 @@ GPIO.setup(PUMP_PIN,GPIO.OUT)
 appid = "MoodyPlant"
 gearkey = "4vAN246i0mJ6Del"
 gearsecret =  "x2zcDw1cctrJKvZFm86tUsAI3"
-microgear.setalias("Pi")
-microgear.on_connect = connection
-microgear.on_message = subscription
-microgear.on_disconnect = disconnect                                                                                                                                                                                                                                                                                                                                                                                               
-microgear.subscribe("/ldr")
-microgear.connect(False)
-sensor = ""
-status = "OFF"#status_pump
 
 spi = spidev.SpiDev()
 spi.open(0, 0)
@@ -70,6 +62,12 @@ def getmood(num):
     elif(num==2):
         return "I'M HUNGRY"
 
+microgear.setalias("Pi")
+microgear.on_connect = connection
+microgear.on_message = subscription
+microgear.on_disconnect = disconnect                                                                                                                                                                                                                                                                                                                                                                                               
+#microgear.subscribe("/ldr")
+microgear.connect(False)
 
 microgear.create(gearkey,gearsecret,appid,{'debugmode': True})
 
@@ -92,6 +90,8 @@ def subscription(topic,message):
 def disconnect():
     logging.debug("disconnect is work")
 
+sensor = ""
+status = "OFF"#status_pump
 try:
     while True:
         humidity, temperature = Adafruit_DHT.read_retry(11, 7)
