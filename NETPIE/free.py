@@ -2,6 +2,8 @@ import microgear.client as microgear
 import time
 import logging
 import RPi.GPIO as GPIO
+import sys
+import Adafruit_DHT
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
@@ -20,24 +22,30 @@ def connection():
 def subscription(topic,message):
     #logging.info(topic+" "+message)
     #print message
-    global s
-    if message == "ON":
-        if (s == 1):
-            s = 0
-            GPIO.output(11,GPIO.LOW)
-            #time.sleep(0.5)
-        elif (s == 0):
-            s=1
-            GPIO.output(11,GPIO.HIGH)
-            #time.sleep(0.5)
-    logging.info(topic+"-- "+str(s))
-    microgear.publish("/ldr", str(s))
+    global info
+    # if message == "ON":
+    #     if (s == 1):
+    #         s = 0
+    #         GPIO.output(11,GPIO.LOW)
+    #         #time.sleep(0.5)
+    #     elif (s == 0):
+    #         s=1
+    #         GPIO.output(11,GPIO.HIGH)
+    #         #time.sleep(0.5)
+    if message == "ON"
+          info[0], info[1] = Adafruit_DHT.read_retry(11, 7)
+          if info[0] is not None and info[1] is not None:
+                #print 'temp = '+ str(temperature)+ str(humidity)
+                print info
+                print 'Temp={0:0.1f}*C  Humidity={1:0.1f}%'.format(info[1], info[0])
+    logging.info(topic+"-- "+info)
+    microgear.publish("/ldr", info)
         
 
 def disconnect():
     logging.debug("disconnect is work")
 
-s = 0
+info = [0,0]
 microgear.setalias("Pi")
 microgear.on_connect = connection
 microgear.on_message = subscription
