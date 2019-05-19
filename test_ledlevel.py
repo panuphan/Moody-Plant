@@ -5,14 +5,14 @@ import spidev
 import sys
 import Adafruit_DHT
 import time
-
+PUMP_PIN = 3
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(29, GPIO.OUT)
 GPIO.setup(31, GPIO.OUT)
 GPIO.setup(33, GPIO.OUT)
 GPIO.setup(PUMP_PIN,GPIO.OUT)
 
-PUMP_PIN = 3
+
 spi = spidev.SpiDev()
 spi.open(0, 0)
 spi.max_speed_hz = 250000
@@ -62,17 +62,7 @@ try:
             info[i+2]=channeldata 
         # voltage = round(((channeldata * 3300) / 1024), 0)
         # print('Voltage (mV): {}'.format(voltage))
-            print('Data{} : {}\n'.format(i,channeldata))
-
-        # if voltage < 50:
-        #     # Green
-        #     print("GREEN")
-        # elif voltage < 1800:
-        #     # Yellow
-        #     print("YELLOW")
-        # else:
-        #     # Red
-        #     print("RED")
+            print('Data{} : {}'.format(i,channeldata))
             sleep(1)
         
         if (info[1] >= 25 and info[1] <= 35 and info[0] >= 50 and info[2]<500 and info[2]>300):
@@ -90,18 +80,22 @@ try:
         else:
             #not good
             #water pump active
-            for i in range(0,2):
-                GPIO.output(PUMP_PIN,GPIO.HIGH)
-                print('pump active')
-                time.sleep(3)
             print('hungry')
             GPIO.output(33,1)
             GPIO.output(29,0)
             GPIO.output(31,1)
+            GPIO.output(PUMP_PIN,GPIO.HIGH)
+            print('pump active')
+            time.sleep(5)
+            GPIO.output(33,0)
+            GPIO.output(29,1)
+            GPIO.output(PUMP_PIN,GPIO.LOW)
 
         if(info[3]<=200):
             #warning
             print('no water')
+
+        
 finally:                # run on exit
     spi.close()         # clean up
     GPIO.cleanup()
