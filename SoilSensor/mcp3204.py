@@ -45,15 +45,15 @@ try:
         # print('Voltage (mV): {}'.format(voltage))
         print('Data        : {}\n'.format(channeldata))
 
-        if voltage < 50:
-            # Green
-            print("GREEN")
-        elif voltage < 1800:
-            # Yellow
-            print("YELLOW")
-        else:
-            # Red
-            print("RED")
+        # if voltage < 50:
+        #     # Green
+        #     print("GREEN")
+        # elif voltage < 1800:
+        #     # Yellow
+        #     print("YELLOW")
+        # else:
+        #     # Red
+        #     print("RED")
         sleep(2)
 finally:                # run on exit
     spi.close()         # clean up
