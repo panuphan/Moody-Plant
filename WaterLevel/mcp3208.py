@@ -11,6 +11,7 @@ pwm1.start(0)
 adc = MCP3208()
 
 while(1):
+    
     print(adc.read(0))
     # pwm1.ChangeDutyCycle(adc.read(0)/40.95)
     pwm1.ChangeDutyCycle(adc.read(0))
