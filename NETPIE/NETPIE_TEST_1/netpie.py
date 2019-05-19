@@ -36,6 +36,6 @@ while 1:
     if microgear.connected: 
         text_string = "COUNT :" +str(c)
         microgear.chat(ALIAS,text_string)
-        logging.debug(">>"+text_string)
+        logging.info(">>"+text_string)
     time.sleep(3)
     c+=1
