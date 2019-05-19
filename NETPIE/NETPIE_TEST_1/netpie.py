@@ -30,12 +30,12 @@ microgear.on_connect = connection
 microgear.on_message = subscription
 microgear.on_disconnect = disconnect
 microgear.subscribe("/mails")
-microgear.connect(False)
+microgear.connect(True)
 c = 0
 while 1:
-    if microgear.connected: 
+    if(microgear.connected): 
         text_string = "COUNT :" +str(c)
         microgear.chat(TARGET_ALIAS,text_string)
-        logging.info(">>"+text_string)
+        print(">>"+text_string)
     time.sleep(3)
     c+=1
