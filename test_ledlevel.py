@@ -86,14 +86,19 @@ try:
             GPIO.output(31,1)
             GPIO.output(PUMP_PIN,GPIO.HIGH)
             print('pump active')
+            print('watering')
             time.sleep(5)
             GPIO.output(33,0)
             GPIO.output(29,1)
+            time.sleep(2)
             GPIO.output(PUMP_PIN,GPIO.LOW)
 
         if(info[3]<=200):
             #warning
             print('no water')
+            GPIO.output(33,1)
+            GPIO.output(29,0)
+            GPIO.output(31,0)
 
         
 finally:                # run on exit
