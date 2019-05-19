@@ -58,14 +58,13 @@ def connection():
     logging.info("Now I am connected with netpie")
 
 def subscription(topic,message):
-    #logging.info(topic+" "+message)
     print message
     global status
     if message == "ON":
-        GPIO.output(11,GPIO.HIGH)
+        GPIO.output(PUMP_PIN,GPIO.HIGH)
         status = "ON"
     else :
-        GPIO.output(11,GPIO.LOW)
+        GPIO.output(PUMP_PIN,GPIO.LOW)
         status = "OFF"
 
     logging.info(topic+"-- "+status)
@@ -82,21 +81,17 @@ microgear.subscribe("/ldr")
 microgear.connect(False)
 
 sensor = ""
-status = "OFF"
+status = "OFF"#status_pump
 while True:
     humidity, temperature = Adafruit_DHT.read_retry(11, 7)
     if temperature is not None and humidity is not None:
         print 'Temp={0:0.1f}*C  Humidity={1:0.1f}%'.format(temperature, humidity)
     sensor = str(humidity)+','+str(temperature)
-        # channeldata = poll_sensor(channel)
     soil = ReadInput(0)
     waterlevel = ReadInput(1)
     print 'soil ='+str(soil)
     print 'waterlevel ='+str(waterlevel)
     sensor = str(humidity)+','+str(temperature)+','+str((soil-200)*0.222)+','+str(waterlevel*0.285)+','+status
-        # voltage = round(((channeldata * 3300) / 1024), 0)
-        # print('Voltage (mV): {}'.format(voltage))
-            #print('Data{} : {}'.format(i,channeldata))
     time.sleep(0.3)
     if(microgear.connected):
         print sensor
