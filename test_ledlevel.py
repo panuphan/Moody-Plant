@@ -43,32 +43,23 @@ def ReadInput(Sensor):
     data = ((adc[1]&3) << 8) + adc[2]
     return data
 
-
+info = [0,0,0,0]
+#[humdity,temp,soil,water_level]
 try:
     while True:
         #channel = 0
         info[0],info[1]  = Adafruit_DHT.read_retry(11, 7)
-          if info[0] is not None and info[1] is not None:
-                #print 'temp = '+ str(temperature)+ str(humidity)
-                print 'Temp={0:0.1f}*C  Humidity={1:0.1f}%'.format(info[1], info[0])
-                # if (info[1] >= 25 and info[1] <= 35 and info[0] >= 60):
-                #     GPIO.output(33,0)
-                #     GPIO.output(29,1)
-                #     GPIO.output(31,1)
-                # else:
-                #     GPIO.output(33,1)
-                #     GPIO.output(29,0)
-                #     GPIO.output(31,0)
-                    
-          #time.sleep(0.5)
+        if info[0] is not None and info[1] is not None:
+            print 'Temp={0:0.1f}*C  Humidity={1:0.1f}%'.format(info[1], info[0])
+        else:
+            print('no value')
         for i in range(0,2):
         # channeldata = poll_sensor(channel)
             channeldata = ReadInput(i)
-            info.append(channeldata) 
+            info[i+2]=channeldata 
         # voltage = round(((channeldata * 3300) / 1024), 0)
         # print('Voltage (mV): {}'.format(voltage))
-            print(i)
-            print('Data        : {}\n'.format(channeldata))
+            print('Data{} : {}\n'.format(i,channeldata))
 
         # if voltage < 50:
         #     # Green
@@ -79,16 +70,28 @@ try:
         # else:
         #     # Red
         #     print("RED")
-            sleep(2)
+            sleep(1)
         
-        if (info[1] >= 25 and info[1] <= 35 and info[0] >= 60):
-                    GPIO.output(33,0)
-                    GPIO.output(29,1)
-                    GPIO.output(31,1)
-                else:
-                    GPIO.output(33,1)
-                    GPIO.output(29,0)
-                    GPIO.output(31,0)
+        if (info[1] >= 25 and info[1] <= 35 and info[0] >= 50 and info[2]<500 and info[2]>300):
+            #default level
+            GPIO.output(33,0)
+            GPIO.output(29,1)
+            GPIO.output(31,0)
+        elif(info[2]=<300):
+            #good 
+            GPIO.output(33,0)
+            GPIO.output(29,1)
+            GPIO.output(31,1)
+        else:
+            #not good
+            #water pump active
+            GPIO.output(33,1)
+            GPIO.output(29,1)
+            GPIO.output(31,0)
+
+        if(info[3]<=200):
+            #warning
+            print('no water')
 finally:                # run on exit
     spi.close()         # clean up
     GPIO.cleanup()
