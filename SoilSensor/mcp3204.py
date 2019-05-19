@@ -1,3 +1,4 @@
+""" https://www.rototron.info/raspberry-pi-analog-water-sensor-tutorial/ """
 from time import sleep
 import RPi.GPIO as GPIO
 import spidev
@@ -28,14 +29,20 @@ def poll_sensor(channel):
         # XXXXXXXX, XXXX####, ######XX
         return ((r[1] & 31) << 6) + (r[2] >> 2)
 
+#Read SPI Sensor input 0 to 7 for MCP3008
+def ReadInput(Sensor):
+    adc = spi.xfer2([1,(8+Sensor)<<4,0])
+    data = ((adc[1]&3) << 8) + adc[2]
+    return data
 
 try:
     while True:
         channel = 0
-        channeldata = poll_sensor(channel)
+        # channeldata = poll_sensor(channel)
+        channeldata = ReadInput(channel)
 
-        voltage = round(((channeldata * 3300) / 1024), 0)
-        print('Voltage (mV): {}'.format(voltage))
+        # voltage = round(((channeldata * 3300) / 1024), 0)
+        # print('Voltage (mV): {}'.format(voltage))
         print('Data        : {}\n'.format(channeldata))
 
         if voltage < 50:
