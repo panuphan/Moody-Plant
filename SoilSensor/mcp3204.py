@@ -35,15 +35,18 @@ def ReadInput(Sensor):
     data = ((adc[1]&3) << 8) + adc[2]
     return data
 
+
 try:
     while True:
-        channel = 0
+        #channel = 0
+        for i in range(0,2):
         # channeldata = poll_sensor(channel)
-        channeldata = ReadInput(channel)
+            channeldata = ReadInput(i)
 
         # voltage = round(((channeldata * 3300) / 1024), 0)
         # print('Voltage (mV): {}'.format(voltage))
-        print('Data        : {}\n'.format(channeldata))
+            print(i)
+            print('Data        : {}\n'.format(channeldata))
 
         # if voltage < 50:
         #     # Green
@@ -54,7 +57,7 @@ try:
         # else:
         #     # Red
         #     print("RED")
-        sleep(2)
+            sleep(2)
 finally:                # run on exit
     spi.close()         # clean up
     GPIO.cleanup()
