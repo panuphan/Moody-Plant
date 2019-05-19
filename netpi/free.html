@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<script src="https://cdn.netpie.io/microgear.js"></script>
+<script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+
+<script>
+   const APPID = "MyFirstNETPIE";
+  const KEY = "UzVSp4XxbzkgOhi";
+  const SECRET = "bYDxtNjPhSq5HGDyz37onMhtT";
+
+  const ALIAS = "HTML_web";
+  const thing1 = "Pi";       
+
+  var microgear = Microgear.create({
+    key: KEY,
+    secret: SECRET,
+    alias : ALIAS
+  });
+
+  microgear.on('message',function(topic,msg) {
+    document.getElementById("raw_data").innerHTML = "LED = " + msg;
+  });
+
+  microgear.on('connected', function() {
+    microgear.setAlias(ALIAS);
+    document.getElementById("connected_NETPIE").innerHTML = "Connected to NETPIE"
+  });
+
+  microgear.on('present', function(event) {
+    console.log(event);
+  });
+
+  microgear.on('absent', function(event) {
+    console.log(event);
+  });
+
+  microgear.resettoken(function(err) {
+    microgear.connect(APPID);
+  });
+  
+$(
+function() {
+    $('#ButtonOnclick').click(function()
+      {
+         if (microgear.connected){
+             microgear.chat("Pi", "ON")}
+      })
+
+     $('#ButtonOffclick').click(function()
+      {
+          if (microgear.connected){
+              microgear.chat("Pi", "OFF")}
+      })
+}
+);
+</script>
+
+<h1 id="connected_NETPIE"></h1>
+<p style="text-align: center;"><button type="button" id="ButtonOnclick">ON</button> <button type="button" id="ButtonOffclick">OFF</button></p>
+<h2 style="text-align: center;"><p id="raw_data"></p></h2>
+
+
+</body>
+</html>
+

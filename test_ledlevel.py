@@ -10,6 +10,9 @@ GPIO.setmode(GPIO.BOARD)
 GPIO.setup(29, GPIO.OUT)
 GPIO.setup(31, GPIO.OUT)
 GPIO.setup(33, GPIO.OUT)
+GPIO.setup(PUMP_PIN,GPIO.OUT)
+
+PUMP_PIN = 3
 spi = spidev.SpiDev()
 spi.open(0, 0)
 spi.max_speed_hz = 250000
@@ -74,20 +77,27 @@ try:
         
         if (info[1] >= 25 and info[1] <= 35 and info[0] >= 50 and info[2]<500 and info[2]>300):
             #default level
+            print('default')
             GPIO.output(33,0)
             GPIO.output(29,1)
             GPIO.output(31,0)
-        elif(info[2]=<300):
+        elif info[2]<=300 :
             #good 
+            print('watering')
             GPIO.output(33,0)
             GPIO.output(29,1)
             GPIO.output(31,1)
         else:
             #not good
             #water pump active
+            for i in range(0,2):
+                GPIO.output(PUMP_PIN,GPIO.HIGH)
+                print('pump active')
+                time.sleep(3)
+            print('hungry')
             GPIO.output(33,1)
-            GPIO.output(29,1)
-            GPIO.output(31,0)
+            GPIO.output(29,0)
+            GPIO.output(31,1)
 
         if(info[3]<=200):
             #warning
