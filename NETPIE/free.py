@@ -145,7 +145,7 @@ try:
             GPIO.output(PUMP_PIN,GPIO.LOW)
             status = 0
 
-        sensor = str(humidity)+','+str(temperature)+','+str((soil-200)*0.222)+','+str(waterlevel*0.285)+','+status+','+mood+','+water
+        sensor = str(humidity)+','+str(temperature)+','+str((soil-200)*0.222)+','+str(waterlevel*0.285)+','+status+','+mood+','+str(water)
         #time.sleep(0.3)
         if(microgear.connected):
             print sensor
