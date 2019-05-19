@@ -8,7 +8,7 @@ GPIO.setmode(GPIO.BOARD)
 GPIO.setup(5,GPIO.IN)
 GPIO.setup(3,GPIO.OUT)
 
-appid = "MoMoodyPlantProject"
+appid = "MoodyPlantProject"
 gearkey = "9Cixu1tG1XachJo"
 gearsecret =  "n4ByQyKjHLaqYEekRiYxrQOgV"
 ALIAS = "RPi_01"
