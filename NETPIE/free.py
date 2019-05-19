@@ -59,18 +59,17 @@ def connection():
 
 def subscription(topic,message):
     #logging.info(topic+" "+message)
-    #print message
+    print message
+    global status
     if message == "ON":
-        if (s == 1):
-            s = 0
-            GPIO.output(11,GPIO.LOW)
-            #time.sleep(0.5)
-        elif (s == 0):
-            s=1
-            GPIO.output(11,GPIO.HIGH)
-            #time.sleep(0.5)
-    logging.info(topic+"-- "+info)
-    microgear.publish("/ldr", info)
+        GPIO.output(11,GPIO.HIGH)
+        status = "ON"
+    else :
+        GPIO.output(11,GPIO.LOW)
+        status = "OFF"
+
+    logging.info(topic+"-- "+status)
+    microgear.publish("/gearname/ldr", status)
         
 def disconnect():
     logging.debug("disconnect is work")
@@ -82,23 +81,25 @@ microgear.on_disconnect = disconnect
 microgear.subscribe("/ldr")
 microgear.connect(False)
 
-
+sensor = ""
+status = "OFF"
 while True:
     humidity, temperature = Adafruit_DHT.read_retry(11, 7)
-    sensor = ""
-        if temperature is not None and humidity is not None:
-            print 'Temp={0:0.1f}*C  Humidity={1:0.1f}%'.format(temperature, humidity)
-        sensor = str(humidity)+','+str(temperature)
+    if temperature is not None and humidity is not None:
+        print 'Temp={0:0.1f}*C  Humidity={1:0.1f}%'.format(temperature, humidity)
+    sensor = str(humidity)+','+str(temperature)
         # channeldata = poll_sensor(channel)
-        soil = ReadInput(0)
-        waterlevel = ReadInput(1)
-        sensor = str(humidity)+','+str(temperature)+','+str((soil-200)*0.222)+','+str(waterlevel*0.285)
+    soil = ReadInput(0)
+    waterlevel = ReadInput(1)
+    print 'soil ='+str(soil)
+    print 'waterlevel ='+str(waterlevel)
+    sensor = str(humidity)+','+str(temperature)+','+str((soil-200)*0.222)+','+str(waterlevel*0.285)+','+status
         # voltage = round(((channeldata * 3300) / 1024), 0)
         # print('Voltage (mV): {}'.format(voltage))
             #print('Data{} : {}'.format(i,channeldata))
-        sleep(1)
-        if(microgear.connected):
-            print sensor
-            microgear.chat("/ldr",sensor)
+    time.sleep(0.3)
+    if(microgear.connected):
+        print sensor
+        microgear.chat("/ldr",sensor)
         
-        time.sleep(0.3)
+    time.sleep(0.3)
