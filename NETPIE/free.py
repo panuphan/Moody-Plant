@@ -62,13 +62,6 @@ def getmood(num):
     elif(num==2):
         return "I'M HUNGRY"
 
-microgear.setalias("Pi")
-microgear.on_connect = connection
-microgear.on_message = subscription
-microgear.on_disconnect = disconnect                                                                                                                                                                                                                                                                                                                                                                                               
-#microgear.subscribe("/ldr")
-microgear.connect(False)
-
 microgear.create(gearkey,gearsecret,appid,{'debugmode': True})
 
 def connection():
@@ -79,10 +72,10 @@ def subscription(topic,message):
     global status
     if message == "ON":
         GPIO.output(PUMP_PIN,GPIO.HIGH)
-        status = "ON"
+        status = 1
     else :
         GPIO.output(PUMP_PIN,GPIO.LOW)
-        status = "OFF"
+        status = 0
 
     logging.info(topic+"-- "+status)
     microgear.publish("/gearname/ldr", status)
@@ -90,8 +83,15 @@ def subscription(topic,message):
 def disconnect():
     logging.debug("disconnect is work")
 
+microgear.setalias("Pi")
+microgear.on_connect = connection
+microgear.on_message = subscription
+microgear.on_disconnect = disconnect                                                                                                                                                                                                                                                                                                                                                                                               
+#microgear.subscribe("/ldr")
+microgear.connect(False)
+
 sensor = ""
-status = "OFF"#status_pump
+status = 0#status_pump
 try:
     while True:
         humidity, temperature = Adafruit_DHT.read_retry(11, 7)
@@ -144,8 +144,8 @@ try:
             time.sleep(1)
             GPIO.output(PUMP_PIN,GPIO.LOW)
             status = 0
-
-        sensor = str(humidity)+','+str(temperature)+','+str((soil-200)*0.222)+','+str(waterlevel*0.285)+','+status+','+mood
+        print typeof(mo)
+        sensor = str(humidity)+','+str(temperature)+','+str((soil-200)*0.222)+','+str(waterlevel*0.285)+','+str(status)+','+mood
         #time.sleep(0.3)
         if(microgear.connected):
             print sensor
